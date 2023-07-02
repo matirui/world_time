@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:word_time/screens/counter.dart';
-import 'package:word_time/services/world_time_provider.dart';
+import 'package:world_time/screens/counter.dart';
+import 'package:world_time/services/world_time_provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

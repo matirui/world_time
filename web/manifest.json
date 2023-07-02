@@ -1,6 +1,6 @@
 {
-    "name": "word_time",
-    "short_name": "word_time",
+    "name": "world_time",
+    "short_name": "world_time",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

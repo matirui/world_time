@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_time/services/world_time.dart';
+import 'package:world_time/services/world_time.dart';
 
 class WorldTimeProvider extends ChangeNotifier {
   WorldTime worldTime = WorldTime(

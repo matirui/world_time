@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:word_time/screens/choose_location.dart';
-import 'package:word_time/screens/home.dart';
-import 'package:word_time/services/world_time_provider.dart';
+import 'package:world_time/screens/choose_location.dart';
+import 'package:world_time/screens/home.dart';
+import 'package:world_time/services/world_time_provider.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');

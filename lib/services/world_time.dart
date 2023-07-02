@@ -31,10 +31,12 @@ class WorldTime {
           ) *
           (offset.contains('-') ? -1 : 1);
       DateTime now = DateTime.parse(datetime);
-      time = now.add(durationOffset);
+      now = now.add(durationOffset);
 
       // set time property
       isDayTime = now.hour > 6 && now.hour < 20;
+
+      time = now;
       return this;
     } catch (e) {
       time = null;
