@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:word_time/screens/counter.dart';
 import 'package:word_time/services/world_time_provider.dart';
 
 class Home extends StatefulWidget {
@@ -58,9 +59,10 @@ class _HomeState extends State<Home> {
                         Text(
                           worldTime.location,
                           style: const TextStyle(
-                              fontSize: 25,
-                              letterSpacing: 2,
-                              color: Colors.white),
+                            fontSize: 25,
+                            letterSpacing: 2,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -68,16 +70,13 @@ class _HomeState extends State<Home> {
                     Text(
                       worldTime.url,
                       style: const TextStyle(
-                          fontSize: 12, letterSpacing: 2, color: Colors.white),
-                    ),
-                    const SizedBox(height: 20.0),
-                    Text(
-                      worldTime.time!,
-                      style: const TextStyle(
-                        fontSize: 66,
+                        fontSize: 12,
+                        letterSpacing: 2,
                         color: Colors.white,
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 20.0),
+                    Counter(now: worldTime.time!)
                   ],
                 ),
               ),
