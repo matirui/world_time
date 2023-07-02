@@ -14,7 +14,9 @@ class ChooseLocation extends StatefulWidget {
 }
 
 class _ChooseLocationState extends State<ChooseLocation> {
-  Future<List<WorldTime>> worldTimes = getWorldTimes();
+  final Future<List<WorldTime>> _worldTimes = getWorldTimes();
+  Future<List<WorldTime>> _filteredWorldTimes = Future(() => []);
+  final TextEditingController _textController = TextEditingController();
 
   static Future<List<WorldTime>> getWorldTimes() async {
     List<String> list = await File('assets/country.csv').readAsLines();
@@ -31,7 +33,30 @@ class _ChooseLocationState extends State<ChooseLocation> {
     return worldTimes;
   }
 
-  Widget buildWorldTimesList(List<WorldTime> worldTimes) => ListView.builder(
+  @override
+  void initState() {
+    _filteredWorldTimes = _worldTimes;
+    super.initState();
+  }
+
+  void _filter(String filter) async {
+    List<WorldTime> result = [];
+    if (filter.isEmpty) {
+      result = await _worldTimes;
+    } else {
+      result = await _worldTimes;
+      result = result
+          .where((e) => e.location.toLowerCase().contains(filter.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      _filteredWorldTimes = Future(() => result);
+    });
+  }
+
+  Widget buildWorldTimesList(List<WorldTime> worldTimes) {
+    return Expanded(
+      child: ListView.builder(
         itemCount: worldTimes.length,
         itemBuilder: (context, index) {
           return Padding(
@@ -47,7 +72,9 @@ class _ChooseLocationState extends State<ChooseLocation> {
             ),
           );
         },
-      );
+      ),
+    );
+  }
 
   void updateTime(BuildContext context, WorldTime worldTime) {
     if (context.mounted) {
@@ -70,20 +97,33 @@ class _ChooseLocationState extends State<ChooseLocation> {
             onPressed: () => context.go('/home'),
           ),
         ),
-        body: FutureBuilder(
-          future: worldTimes,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return const Text('Algo salió mal 😫');
-            } else if (snapshot.hasData) {
-              final worldTimes = snapshot.data!;
-              return buildWorldTimesList(worldTimes);
-            } else {
-              return const Text("No data...");
-            }
-          },
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) => {_filter(value)},
+                decoration: const InputDecoration(
+                  labelText: 'Search location',
+                  suffixIcon: Icon(Icons.search),
+                ),
+                controller: _textController,
+              ),
+            ),
+            FutureBuilder(
+              future: _filteredWorldTimes,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('Algo salió mal 😫');
+                } else if (snapshot.hasData) {
+                  final filteredWorldTimes = snapshot.data!;
+                  return buildWorldTimesList(filteredWorldTimes);
+                } else {
+                  return const Text("No data...");
+                }
+              },
+            ),
+          ],
         ));
   }
 }
