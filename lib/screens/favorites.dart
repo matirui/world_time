@@ -30,49 +30,68 @@ class _FavoritesState extends State<Favorites> {
   }
 
   Widget buildFavoritesWorldTimesList(List<WorldTime> favoritesWorldTimes) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: favoritesWorldTimes.length,
-        itemBuilder: (context, index) {
-          final currentFavorite = favoritesWorldTimes[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
-            child: Card(
-              child: ListTile(
-                onTap: () => updateTime(context, currentFavorite),
-                title: Text(
-                  currentFavorite.location,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(currentFavorite.url),
-                subtitleTextStyle: const TextStyle(fontSize: 12),
-                leading: CircleAvatar(
-                  backgroundImage: Image.network(currentFavorite.flag).image,
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Counter(
-                      now: currentFavorite.time!,
-                      size: 20.0,
-                      color: Colors.black,
+    return favoritesWorldTimes.isNotEmpty
+        ? Expanded(
+            child: ListView.builder(
+              itemCount: favoritesWorldTimes.length,
+              itemBuilder: (context, index) {
+                final currentFavorite = favoritesWorldTimes[index];
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
+                  child: Card(
+                    child: ListTile(
+                      onTap: () => updateTime(context, currentFavorite),
+                      title: Text(
+                        currentFavorite.location,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(currentFavorite.url),
+                      subtitleTextStyle: const TextStyle(fontSize: 12),
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            Image.network(currentFavorite.flag).image,
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Counter(
+                            now: currentFavorite.time!,
+                            size: 20.0,
+                            color: Colors.black,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              context
+                                  .read<WorldTimeProvider>()
+                                  .removeFromFavorites(currentFavorite);
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        context
-                            .read<WorldTimeProvider>()
-                            .removeFromFavorites(currentFavorite);
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                  ],
+                  ),
+                );
+              },
+            ),
+          )
+        : Center(
+            child: Column(
+            children: [
+              const Text(
+                "You have no favorites!",
+                style: TextStyle(
+                  fontSize: 20,
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+              TextButton(
+                  onPressed: () {
+                    context.push('/location');
+                  },
+                  child: const Text("Add some!"))
+            ],
+          ));
   }
 
   @override
@@ -90,6 +109,8 @@ class _FavoritesState extends State<Favorites> {
         ),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           FutureBuilder(
             future: getFavoritesWorldTimes(),

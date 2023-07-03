@@ -81,7 +81,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
   void updateTime(BuildContext context, WorldTime worldTime) {
     if (context.mounted) {
       context.read<WorldTimeProvider>().setWorldTime(worldTime);
-      context.pop();
+      context.go('/home');
     }
   }
 
