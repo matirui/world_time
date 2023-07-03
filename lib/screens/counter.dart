@@ -5,7 +5,10 @@ import 'package:intl/intl.dart';
 
 class Counter extends StatefulWidget {
   final DateTime now;
-  const Counter({super.key, required this.now});
+  final double size;
+  final Color color;
+  const Counter(
+      {super.key, required this.now, required this.size, required this.color});
 
   @override
   State<Counter> createState() => _CounterState();
@@ -39,9 +42,9 @@ class _CounterState extends State<Counter> {
   Widget build(BuildContext context) {
     return Text(
       DateFormat.jms().format(now),
-      style: const TextStyle(
-        fontSize: 66,
-        color: Colors.white,
+      style: TextStyle(
+        fontSize: widget.size,
+        color: widget.color,
       ),
     );
   }

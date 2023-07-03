@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 
@@ -9,6 +10,7 @@ class WorldTime {
   String url; // location url for api endpoint
   String? code;
   bool? isDayTime;
+  String? city;
 
   WorldTime({required this.flag, required this.location, required this.url});
 
@@ -42,5 +44,27 @@ class WorldTime {
       time = null;
     }
     return Future(() => this);
+  }
+
+  Future<WorldTime> getLocalTime() async {
+    try {
+      Response respose = await get(Uri.parse('https://ipinfo.io'), headers: {
+        HttpHeaders.acceptHeader: 'application/json',
+      });
+      Map data = jsonDecode(respose.body);
+      String timezone = data['timezone'];
+      code = data['country'];
+      city = data['city'];
+
+      List<String> list = await File('assets/country.csv').readAsLines();
+      List<List<String>> countries = list.map((e) => e.split(';')).toList();
+
+      location = countries.where((e) => e[0].contains(code!)).toList()[0][1];
+      flag = 'https://flagcdn.com/w160/${code!.toLowerCase()}.png';
+      url = timezone;
+      return await getTime();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

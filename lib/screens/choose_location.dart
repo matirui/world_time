@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -14,37 +12,21 @@ class ChooseLocation extends StatefulWidget {
 }
 
 class _ChooseLocationState extends State<ChooseLocation> {
-  final Future<List<WorldTime>> _worldTimes = getWorldTimes();
   Future<List<WorldTime>> _filteredWorldTimes = Future(() => []);
   final TextEditingController _textController = TextEditingController();
 
-  static Future<List<WorldTime>> getWorldTimes() async {
-    List<String> list = await File('assets/country.csv').readAsLines();
-    List<List<String>> countries = list.map((e) => e.split(';')).toList();
-    List<WorldTime> worldTimes = countries
-        .map(
-          (e) => WorldTime(
-            flag: 'https://flagcdn.com/w160/${e[0].toLowerCase()}.png',
-            location: e[1],
-            url: e[2],
-          ),
-        )
-        .toList();
-    return worldTimes;
-  }
-
   @override
   void initState() {
-    _filteredWorldTimes = _worldTimes;
+    _filteredWorldTimes = context.read<WorldTimeProvider>().worldTimes;
     super.initState();
   }
 
   void _filter(String filter) async {
     List<WorldTime> result = [];
     if (filter.isEmpty) {
-      result = await _worldTimes;
+      result = await context.read<WorldTimeProvider>().worldTimes;
     } else {
-      result = await _worldTimes;
+      result = await context.read<WorldTimeProvider>().worldTimes;
       result = result
           .where((e) => e.location.toLowerCase().contains(filter.toLowerCase()))
           .toList();
@@ -55,6 +37,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
   }
 
   Widget buildWorldTimesList(List<WorldTime> worldTimes) {
+    List<WorldTime> favorites = context.watch<WorldTimeProvider>().favorites;
     return Expanded(
       child: ListView.builder(
         itemCount: worldTimes.length,
@@ -67,6 +50,23 @@ class _ChooseLocationState extends State<ChooseLocation> {
                 title: Text(worldTimes[index].location),
                 leading: CircleAvatar(
                   backgroundImage: Image.network(worldTimes[index].flag).image,
+                ),
+                trailing: IconButton(
+                  onPressed: () {
+                    if (!favorites.contains(worldTimes[index])) {
+                      context
+                          .read<WorldTimeProvider>()
+                          .addToFavorites(worldTimes[index]);
+                    } else {
+                      context
+                          .read<WorldTimeProvider>()
+                          .removeFromFavorites(worldTimes[index]);
+                    }
+                  },
+                  icon: Icon(Icons.favorite,
+                      color: favorites.contains(worldTimes[index])
+                          ? Colors.red
+                          : Colors.grey),
                 ),
               ),
             ),
@@ -96,6 +96,12 @@ class _ChooseLocationState extends State<ChooseLocation> {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.go('/home'),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.favorite),
+              onPressed: () => context.push('/favorites'),
+            )
+          ],
         ),
         body: Column(
           children: [

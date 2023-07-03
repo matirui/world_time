@@ -31,9 +31,13 @@ class _HomeState extends State<Home> {
         } else {
           var worldTime = snapshot.data!;
           child = Scaffold(
-            backgroundColor: (worldTime.isDayTime ?? true)
-                ? Colors.blue
-                : Colors.indigo.shade900,
+            backgroundColor:
+                worldTime.isDayTime! ? Colors.blue : Colors.indigo.shade900,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => context.push('/favorites'),
+              backgroundColor: Colors.red,
+              child: const Icon(Icons.favorite),
+            ),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 120, 0, 0),
@@ -76,7 +80,49 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const SizedBox(height: 20.0),
-                    Counter(now: worldTime.time!)
+                    Counter(
+                      now: worldTime.time!,
+                      size: 66.0,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10.0),
+                    Column(
+                      children: [
+                        const Text(
+                          'Current Location:',
+                          style: TextStyle(
+                            fontSize: 20,
+                            letterSpacing: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${context.read<WorldTimeProvider>().localTime.location},'
+                              ' ${context.read<WorldTimeProvider>().localTime.city}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                letterSpacing: 2,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Counter(
+                              now: context
+                                  .read<WorldTimeProvider>()
+                                  .localTime
+                                  .time!,
+                              size: 20.0,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

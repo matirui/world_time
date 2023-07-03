@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:world_time/screens/choose_location.dart';
+import 'package:world_time/screens/favorites.dart';
 import 'package:world_time/screens/home.dart';
 import 'package:world_time/services/world_time_provider.dart';
 
@@ -32,6 +33,12 @@ class WorldTimeApp extends StatelessWidget {
           path: '/location',
           builder: (context, state) {
             return const ChooseLocation();
+          },
+        ),
+        GoRoute(
+          path: '/favorites',
+          builder: (context, state) {
+            return const Favorites();
           },
         ),
       ]);
