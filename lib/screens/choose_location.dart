@@ -48,6 +48,8 @@ class _ChooseLocationState extends State<ChooseLocation> {
               child: ListTile(
                 onTap: () => updateTime(context, worldTimes[index]),
                 title: Text(worldTimes[index].location),
+                subtitle: Text(worldTimes[index].url),
+                subtitleTextStyle: const TextStyle(fontSize: 12),
                 leading: CircleAvatar(
                   backgroundImage: Image.network(worldTimes[index].flag).image,
                 ),
@@ -79,7 +81,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
   void updateTime(BuildContext context, WorldTime worldTime) {
     if (context.mounted) {
       context.read<WorldTimeProvider>().setWorldTime(worldTime);
-      context.go('/home');
+      context.pop();
     }
   }
 

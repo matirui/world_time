@@ -36,6 +36,7 @@ class _HomeState extends State<Home> {
             floatingActionButton: FloatingActionButton(
               onPressed: () => context.push('/favorites'),
               backgroundColor: Colors.red,
+              heroTag: UniqueKey(),
               child: const Icon(Icons.favorite),
             ),
             body: SafeArea(
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: <Widget>[
                     TextButton.icon(
-                      onPressed: () => context.go('/location'),
+                      onPressed: () => context.push('/location'),
                       icon: Icon(
                         Icons.edit_location,
                         color: Colors.grey.shade300,

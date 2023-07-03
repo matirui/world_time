@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:world_time/screens/counter.dart';
 import 'package:world_time/services/world_time.dart';
 
 import '../services/world_time_provider.dart';
+import 'counter.dart';
 
 class Favorites extends StatefulWidget {
   const Favorites({super.key});
@@ -22,22 +22,51 @@ class _FavoritesState extends State<Favorites> {
     return favorites;
   }
 
+  void updateTime(BuildContext context, WorldTime worldTime) {
+    if (context.mounted) {
+      context.read<WorldTimeProvider>().setWorldTime(worldTime);
+      context.go('/home');
+    }
+  }
+
   Widget buildFavoritesWorldTimesList(List<WorldTime> favoritesWorldTimes) {
     return Expanded(
       child: ListView.builder(
         itemCount: favoritesWorldTimes.length,
         itemBuilder: (context, index) {
           final currentFavorite = favoritesWorldTimes[index];
-          return Card(
-            child: ListTile(
-              title: Text(
-                currentFavorite.location,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: Counter(
-                now: currentFavorite.time!,
-                size: 20.0,
-                color: Colors.black,
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
+            child: Card(
+              child: ListTile(
+                onTap: () => updateTime(context, currentFavorite),
+                title: Text(
+                  currentFavorite.location,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(currentFavorite.url),
+                subtitleTextStyle: const TextStyle(fontSize: 12),
+                leading: CircleAvatar(
+                  backgroundImage: Image.network(currentFavorite.flag).image,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Counter(
+                      now: currentFavorite.time!,
+                      size: 20.0,
+                      color: Colors.black,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context
+                            .read<WorldTimeProvider>()
+                            .removeFromFavorites(currentFavorite);
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
