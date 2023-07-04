@@ -15,7 +15,7 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites> {
   Future<List<WorldTime>> getFavoritesWorldTimes() async {
-    var favorites = context.watch<WorldTimeProvider>().favorites;
+    var favorites = context.read<WorldTimeProvider>().favorites;
     for (var element in favorites) {
       await element.getTime();
     }
