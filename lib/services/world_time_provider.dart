@@ -4,27 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:world_time/services/world_time.dart';
 
 class WorldTimeProvider extends ChangeNotifier {
-  WorldTime worldTime = WorldTime(
+  WorldTime _worldTime = WorldTime(
       flag: 'argentina.png',
       location: 'Argentina',
       url: 'America/Argentina/Cordoba');
-  late WorldTime localTime;
+  late WorldTime _localTime;
   final Future<List<WorldTime>> _worldTimes = generateWorldTimes();
   final List<WorldTime> _favorites = [];
   static bool _init = true;
 
+  WorldTime get worldTime => _worldTime;
+  WorldTime get localTime => _localTime;
   Future<List<WorldTime>> get worldTimes => _worldTimes;
   List<WorldTime> get favorites => _favorites;
 
   Future<WorldTime> getTime() async {
     if (_init) {
       _init = false;
-      localTime = await worldTime.getLocalTime();
-      return localTime;
+      _localTime = await _worldTime.getLocalTime();
+      return _localTime;
     }
-    await localTime.getTime();
-    await worldTime.getTime();
-    return worldTime;
+    await _localTime.getTime();
+    await _worldTime.getTime();
+    return _worldTime;
+  }
+
+  Future<List<WorldTime>> loadFavoritesWorldTimes() async {
+    for (var element in _favorites) {
+      await element.getTime();
+    }
+    return _favorites;
   }
 
   static Future<List<WorldTime>> generateWorldTimes() async {
@@ -43,7 +52,7 @@ class WorldTimeProvider extends ChangeNotifier {
   }
 
   void setWorldTime(WorldTime worldTime) {
-    this.worldTime = worldTime;
+    _worldTime = worldTime;
     notifyListeners();
   }
 

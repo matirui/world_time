@@ -96,7 +96,7 @@ class _ChooseLocationState extends State<ChooseLocation> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'),
+            onPressed: () => context.pop(),
           ),
           actions: [
             IconButton(

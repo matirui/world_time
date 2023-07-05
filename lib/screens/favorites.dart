@@ -14,19 +14,20 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
-  Future<List<WorldTime>> getFavoritesWorldTimes() async {
-    var favorites = context.read<WorldTimeProvider>().favorites;
-    for (var element in favorites) {
-      await element.getTime();
-    }
-    return favorites;
-  }
+  late Future<List<WorldTime>> _loadFavorites;
 
   void updateTime(BuildContext context, WorldTime worldTime) {
     if (context.mounted) {
       context.read<WorldTimeProvider>().setWorldTime(worldTime);
       context.go('/home');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites =
+        context.read<WorldTimeProvider>().loadFavoritesWorldTimes();
   }
 
   Widget buildFavoritesWorldTimesList(List<WorldTime> favoritesWorldTimes) {
@@ -55,11 +56,13 @@ class _FavoritesState extends State<Favorites> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Counter(
-                            now: currentFavorite.time!,
-                            size: 20.0,
-                            color: Colors.black,
-                          ),
+                          currentFavorite.time != null
+                              ? Counter(
+                                  now: currentFavorite.time!,
+                                  size: 20.0,
+                                  color: Colors.black,
+                                )
+                              : const CircularProgressIndicator(),
                           IconButton(
                             onPressed: () {
                               context
@@ -87,7 +90,13 @@ class _FavoritesState extends State<Favorites> {
               ),
               TextButton(
                   onPressed: () {
-                    context.push('/location');
+                    context.push('/location').then((value) => setState(
+                          () {
+                            _loadFavorites = context
+                                .read<WorldTimeProvider>()
+                                .loadFavoritesWorldTimes();
+                          },
+                        ));
                   },
                   child: const Text("Add some!"))
             ],
@@ -96,6 +105,7 @@ class _FavoritesState extends State<Favorites> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<WorldTimeProvider>().favorites;
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
@@ -113,13 +123,13 @@ class _FavoritesState extends State<Favorites> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           FutureBuilder(
-            future: getFavoritesWorldTimes(),
+            future: _loadFavorites,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Text('Algo salió mal 😫');
               } else if (snapshot.hasData) {
-                final favoritesWorldTimes = snapshot.data!;
-                return buildFavoritesWorldTimesList(favoritesWorldTimes);
+                var favorites = snapshot.data!;
+                return buildFavoritesWorldTimesList(favorites);
               } else {
                 return const Center(
                   child: CircularProgressIndicator(),
